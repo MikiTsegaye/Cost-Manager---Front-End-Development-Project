@@ -7,10 +7,11 @@ const PieChart = ({ data, currency }) => {
 
     // Generate and update chart whenever data or currency changes
     useEffect(() => {
+        // Always clear previous chart to prevent stale data
+        d3.select(svgRef.current).selectAll("*").remove();
+
         // Skip rendering if no data provided
         if (!data || data.length === 0) return;
-
-        // Aggregate costs by category for pie chart
         const categoryTotals = {};
         data.forEach(item => {
             if (!categoryTotals[item.category]) {
@@ -32,9 +33,6 @@ const PieChart = ({ data, currency }) => {
         const width = 600;
         const height = 300;
         const radius = Math.min(width, height) / 2 - 10;
-
-        // Clear previous chart to prevent duplicates
-        d3.select(svgRef.current).selectAll("*").remove();
 
         // Create SVG container and central group for pie
         const svg = d3.select(svgRef.current)
