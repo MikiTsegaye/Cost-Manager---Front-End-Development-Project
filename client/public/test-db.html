@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>db.js Test</title>
+</head>
+<body>
+    <h1>db.js Test Results</h1>
+    <div id="results"></div>
+
+    <script src="db.js"></script>
+    <script>
+        function test() {
+            const resultsDiv = document.getElementById('results');
+            const logs = [];
+            
+            /* Clear localStorage before test to start fresh */
+            localStorage.clear();
+            
+            /* Verify db object exists */
+            if (typeof window.db === 'undefined') {
+                resultsDiv.innerHTML = '<p style="color:red">✗ Error: db object not defined</p>';
+                return;
+            }
+            
+            try {
+                /* Test 1: Create database */
+                const ob = window.db.openCostsDB("costsdb", 1);
+                logs.push("✓ Creating DB succeeded");
+
+                /* Test 2: Add first cost item */
+                const result1 = ob.addCost({sum:200, currency:"USD", category:"FOOD", description:"pizza"});
+                logs.push("✓ Adding 1st cost item succeeded");
+
+                /* Test 3: Add second cost item */
+                const result2 = ob.addCost({sum:400, currency:"USD", category:"CAR", description:"fuel"});
+                logs.push("✓ Adding 2nd cost item succeeded");
+
+                /* Test 4: Get report using global db.getReport */
+                const data = db.getReport("USD");
+                logs.push(`✓ Getting report succeeded - Total: ${data.total.sum}`);
+
+                resultsDiv.innerHTML = '<p style="color:green">' + logs.join('<br>') + '</p>';
+            } catch(exception) {
+                logs.push(`✗ Error: ${exception.message}`);
+                resultsDiv.innerHTML = '<p style="color:red">' + logs.join('<br>') + '</p>';
+            }
+        }
+        
+        /* Run test after a small delay to ensure db.js is loaded */
+        setTimeout(test, 500);
+    </script>
+</body>
+</html>
