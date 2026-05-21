@@ -31,7 +31,7 @@ const fetchExchangeRates = async () => {
 
         // If no custom URL, try default backend server first
         if (!url) {
-            url = process.env.REACT_APP_EXCHANGE_RATE_API || 'http://localhost:5000/api/exchange-rates';
+            url = process.env.REACT_APP_EXCHANGE_RATE_API || 'https://cost-manager-0w4h.onrender.com/api/exchange-rates';
         }
 
         // Attempt to fetch from configured URL (custom or default)
