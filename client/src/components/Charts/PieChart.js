@@ -85,20 +85,32 @@ const PieChart = ({ data, currency }) => {
             .enter()
             .append('g')
             .attr('class', 'legend')
-            .attr('transform', (d, i) => `translate(${radius + 40},${-radius + i * 20})`);
+            .attr('transform', (d, i) => `translate(${radius + 40},${-radius + i * 25})`);
 
-        // Draw colored boxes for legend entries
+        // Draw larger colored boxes for legend entries
         legend.append('rect')
-            .attr('width', 12)
-            .attr('height', 12)
-            .attr('fill', (d, i) => color(i));
+            .attr('width', 16)
+            .attr('height', 16)
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', '#333')
+            .attr('stroke-width', 1);
 
-        // Add category labels and amounts to legend
+        // Add category name clearly next to color box
         legend.append('text')
-            .attr('x', 18)
-            .attr('y', 10)
-            .attr('font-size', '12px')
-            .text(d => `${d.category}: ${currency} ${d.sum.toFixed(2)}`);
+            .attr('x', 22)
+            .attr('y', 12)
+            .attr('font-size', '13px')
+            .attr('font-weight', 'bold')
+            .attr('fill', '#333')
+            .text(d => d.category);
+
+        // Add amount below category name
+        legend.append('text')
+            .attr('x', 22)
+            .attr('y', 26)
+            .attr('font-size', '11px')
+            .attr('fill', '#666')
+            .text(d => `${currency} ${d.sum.toFixed(2)}`);
 
     }, [data, currency]);
 

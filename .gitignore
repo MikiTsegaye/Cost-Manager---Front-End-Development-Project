@@ -52,6 +52,7 @@ coverage/
 .env*.local
 dist/
 build/
+FINAL_CHECKLIST.md
 
 # Logs
 logs/
