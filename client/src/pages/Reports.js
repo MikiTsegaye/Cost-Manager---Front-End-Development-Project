@@ -126,7 +126,7 @@ const Reports = () => {
                             select
                             label="Month"
                             value={month}
-                            onChange={(e) => setMonth(e.target.value)}
+                            onChange={(e) => setMonth(Number(e.target.value))}
                             fullWidth
                         >
                             {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
@@ -140,7 +140,7 @@ const Reports = () => {
                             select
                             label="Year"
                             value={year}
-                            onChange={(e) => setYear(e.target.value)}
+                            onChange={(e) => setYear(Number(e.target.value))}
                             fullWidth
                         >
                             {years.map((y) => (
