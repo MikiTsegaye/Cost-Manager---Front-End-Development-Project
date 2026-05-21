@@ -29,7 +29,7 @@ const PieChart = ({ data, currency }) => {
         if (chartData.length === 0) return;
 
         // Set SVG dimensions for responsive layout
-        const width = 500;
+        const width = 600;
         const height = 300;
         const radius = Math.min(width, height) / 2 - 10;
 
