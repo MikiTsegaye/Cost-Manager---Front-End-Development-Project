@@ -21,7 +21,7 @@ function TabPanel(props) {
 }
 
 // Main App component with tab-based navigation
-function App() {
+function app() {
     // State to track active tab
     const [tabValue, setTabValue] = useState(0);
 
@@ -64,4 +64,4 @@ function App() {
     );
 }
 
-export default App;
+export default app;
