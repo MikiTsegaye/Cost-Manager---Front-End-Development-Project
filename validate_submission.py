@@ -1,3 +1,34 @@
+"""
+COST MANAGER FRONTEND - VALIDATION AGENT
+========================================
+
+This script validates that a Cost Manager project meets all code quality and submission requirements.
+
+VALIDATION CATEGORIES:
+======================
+
+PROJECT CODE REQUIREMENTS (Checked by this script):
+---
+B1:  Comment density - At least 1 comment per 7-9 lines of code
+C1:  Variable/function naming - Must follow camelCase or PascalCase conventions
+C3:  Filename format - All filenames must be lowercase with underscores (e.g., my_file.js)
+C5:  Code alignment - All code must be left-aligned (no excessive indentation)
+D1:  Variable declarations - Must use 'const' or 'let', NO 'var' keyword
+E1/E2/E3: db.js interface - Must expose window.db with required methods: 
+          openCostsDB(), addCost(), getReport()
+
+SUBMISSION REQUIREMENTS (Manual verification needed):
+---
+1. Video: Unlisted YouTube video (max 60 seconds)
+2. ZIP file: Project contents with node_modules DELETED
+3. PDF file: All code files with team information
+4. db.js: Vanilla version as separate submission file
+5. Files: Must submit 3 separate files to Moodle (PDF, db.js, ZIP)
+6. Deadline: Only team manager submits; account for 30-min time offset
+
+See FINAL_CHECKLIST.md and README.md for complete requirements.
+"""
+
 import os
 import sys
 import re
@@ -29,6 +60,35 @@ def scan_naming_conventions():
                     return False
     return True
 
+def scan_naming_conventions_c1():
+    """Validates Rule C1: Variable and function names follow camelCase or PascalCase."""
+    print("Executing Checklist C1: Variable and function naming convention checks...")
+    for root, dirs, files in os.walk("."):
+        if "node_modules" in root or ".git" in root or "dist" in root or "build" in root:
+            continue
+        for file in files:
+            if file.endswith(('.js', '.jsx')):
+                file_path = os.path.join(root, file)
+                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    lines = f.readlines()
+                
+                for idx, line in enumerate(lines, 1):
+                    cleaned_line = line.strip()
+                    
+                    # Skip comments and empty lines
+                    if not cleaned_line or cleaned_line.startswith('//') or cleaned_line.startswith('*'):
+                        continue
+                    
+                    # Check for snake_case variable declarations (forbidden except for CONSTANTS)
+                    # Pattern: const/let/var snake_case_name (but allow UPPER_SNAKE for constants)
+                    snake_case_pattern = r"\b(const|let|var)\s+([a-z][a-z0-9]*_[a-z0-9_]*)\s*="
+                    match = re.search(snake_case_pattern, cleaned_line)
+                    if match and not match.group(2).isupper():
+                        print(f"[REJECT C1] Invalid naming convention at {file_path}:{idx}")
+                        print(f"   Found: {match.group(2)} -> Use camelCase instead (e.g., my_var -> myVar)")
+                        return False
+    return True
+
 def scan_code_quality():
     """Validates Checklist Items B1, C5, and D1 directly across code streams."""
     print("Executing Code Quality Line Scans...")
@@ -42,10 +102,35 @@ def scan_code_quality():
                     lines = f.readlines()
                 
                 comment_count = 0
+                code_lines = 0
                 total_lines = len(lines)
+                in_multiline_comment = False
                 
                 for idx, line in enumerate(lines, 1):
                     cleaned_line = line.strip()
+                    
+                    # Track multi-line comments
+                    if "/*" in cleaned_line:
+                        in_multiline_comment = True
+                    if "*/" in cleaned_line:
+                        in_multiline_comment = False
+                        comment_count += 1
+                        continue
+                    
+                    if in_multiline_comment or cleaned_line.startswith('*'):
+                        comment_count += 1
+                        continue
+                    
+                    # Skip empty lines and comment-only lines
+                    if not cleaned_line:
+                        continue
+                    
+                    if cleaned_line.startswith('//'):
+                        comment_count += 1
+                        continue
+                    
+                    # This is a code line
+                    code_lines += 1
                     
                     # Checklist D1: Ban the usage of 'var' variables
                     if re.search(r"\bvar\b", cleaned_line) and not "window.var" in cleaned_line:
@@ -53,50 +138,91 @@ def scan_code_quality():
                         return False
                     
                     # Checklist C5: Stop centered or right-aligned code strings
-                    if line.startswith(" " * 20) and len(cleaned_line) > 0 and not cleaned_line.startswith(('*', '//')):
-                        # Allow deep nested closures but highlight massive off-center inline spacing blocks
+                    if line.startswith(" " * 20) and len(cleaned_line) > 0:
                         if re.search(r"^\s{24,}", line):
                             print(f"[REJECT C5] Code lines are offset from the left gutter edge. Fix alignments at Line {idx} in {file}")
                             return False
                     
-                    # Track comment frequency blocks
-                    if "//" in cleaned_line or "/*" in cleaned_line or cleaned_line.startswith("*"):
+                    # Inline comment check
+                    if "//" in cleaned_line:
                         comment_count += 1
                 
-                # Checklist B1: Enforce code explanation loops
-                if total_lines > 10 and comment_count < (total_lines / 9):
-                    print(f"[REJECT B1] Inadequate documentation volume located inside: {file_path}")
-                    print(f"-> Found only {comment_count} explanatory comments across {total_lines} lines of functional code.")
-                    return False
+                # Checklist B1: Enforce code explanation loops (1 comment per 7-9 lines)
+                if code_lines > 10:
+                    required_comments = code_lines / 9
+                    if comment_count < required_comments:
+                        print(f"[REJECT B1] Inadequate documentation volume located inside: {file_path}")
+                        print(f"-> Found {comment_count} comments for {code_lines} lines of code (need at least {required_comments:.1f}).")
+                        return False
     return True
 
 def verify_vanilla_db_file():
-    """Validates Section 2 & 5: Check that the testing boundary logic registers DB on window object."""
+    """Validates Section 2 & 5: Check that db.js properly exposes required methods on window object."""
     print("Checking Vanilla db.js boundary registration patterns...")
     vanilla_db_path = "db.js"
+    
+    required_methods = ["openCostsDB", "addCost", "getReport"]
+    
     if os.path.exists(vanilla_db_path):
         with open(vanilla_db_path, 'r', encoding='utf-8') as f:
             content = f.read()
+        
+        # Check if db is exposed on window
         if "window.db" not in content and "window['db']" not in content:
-            # Check for alternative instructor validation structures
-            if "openCostsDB" in content and not ("window." in content or "db =" in content):
-                print("[REJECT E1_E2_E3] Vanilla db.js file fails to assign the 'db' variable tracking module onto the global window wrapper object!")
-                return False
+            print("[REJECT E1_E2_E3] Vanilla db.js file fails to assign the 'db' variable onto the global window object!")
+            return False
+        
+        # Check if all required methods are defined
+        missing_methods = []
+        for method in required_methods:
+            if f"{method}" not in content:
+                missing_methods.append(method)
+        
+        if missing_methods:
+            print(f"[REJECT E1_E2_E3] db.js is missing required methods: {', '.join(missing_methods)}")
+            print(f"   Required methods: openCostsDB(databaseName, databaseVersion), addCost(cost), getReport(currency, year, month)")
+            return False
     else:
-        print("[WARNING] Global standalone backup db.js placeholder file not found at project root level yet.")
+        print("[WARNING] Global standalone backup db.js placeholder file not found at project root level.")
+        print("         -> Vanilla db.js must be included as a separate submission file.")
+    
     return True
 
 if __name__ == "__main__":
     print("====================================================")
     print("      INITIALIZING COMPLIANCE PIPELINE AGENT        ")
-    print("====================================================")
+    print("====================================================\n")
+    
+    print("=" * 50)
+    print("PROJECT CODE REQUIREMENTS VALIDATION")
+    print("=" * 50)
     
     if not scan_naming_conventions():
+        sys.exit(1)
+    if not scan_naming_conventions_c1():
         sys.exit(1)
     if not scan_code_quality():
         sys.exit(1)
     if not verify_vanilla_db_file():
         sys.exit(1)
-        
-    print("\n[SUCCESS] Local directory environment conforms to all grading instructions!")
+    
+    print("\n" + "=" * 50)
+    print("SUBMISSION REQUIREMENTS")
+    print("=" * 50)
+    print("Please verify the following submission guidelines:")
+    print("1. ✓ Video uploaded to YouTube as unlisted (max 60s)")
+    print("2. ✓ ZIP file created (node_modules deleted)")
+    print("3. ✓ PDF file created with all code files")
+    print("   - Filename format: firstname_lastname.pdf (lowercase)")
+    print("   - Includes team info, video link, member details, tool usage summary")
+    print("4. ✓ Three files submitted to Moodle:")
+    print("   - PDF file (code + documentation)")
+    print("   - db.js file (vanilla version)")
+    print("   - ZIP file (project contents)")
+    print("5. ✓ Only team manager submits (via Moodle)")
+    print("   - Account for 30-minute time difference with Moodle server")
+    print("   - Late submissions will NOT be accepted")
+    
+    print("\n" + "=" * 50)
+    print("[SUCCESS] Code validation complete!")
     print("====================================================")
