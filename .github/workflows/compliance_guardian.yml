@@ -1,0 +1,47 @@
+name: "Frontend Course Compliance Guardian"
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  audit_codebase:
+    name: "Enforce Coding Style and Structure"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout Source Code Repository"
+        uses: actions/checkout@v4
+
+      - name: "Initialize Python Runtime Environment"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: "Initialize Node.js Runtime Environment"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: "Verify Project Architecture and Submodule Blocks"
+        run: |
+          echo "Checking directory paths..."
+          if [ -d "client/.git" ] || [ -d "server/.git" ]; then
+             echo "[ERROR] Nested sub-repository tracking artifacts found inside the directories!"
+             echo "This will block your deployment builds on platforms like Render.com."
+             exit 1
+          fi
+
+      - name: "Execute Style Guide and File Layout Linting Rules (Checklist B1, C3, C5, D1)"
+        run: |
+          python validate_submission.py
+
+      - name: "Execute Automated Script Interface Tests (Checklist E1, E2, E3)"
+        run: |
+          if [ -f "local_test_harness.js" ]; then
+            node local_test_harness.js
+          else
+            echo "Test runner script missing, skipping execution matrix pipeline logs loop."
+          fi
