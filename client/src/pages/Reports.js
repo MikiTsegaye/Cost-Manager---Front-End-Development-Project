@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, Box, TextField, MenuItem, Button, Typography, Grid } from '@mui/material';
 import db from '../services/db';
-import exchangeRateService from '../services/exchangeRateService';
-import PieChart from '../components/Charts/pieChart';
-import BarChart from '../components/Charts/barChart';
+import exchangeRateService from '../services/exchange_rate_service';
+import PieChart from '../components/Charts/pie_chart';
+import BarChart from '../components/Charts/bar_chart';
 
 // Supported currencies for reporting
 const currencies = ['USD', 'ILS', 'GBP', 'EURO'];
@@ -115,96 +115,89 @@ const Reports = () => {
 
     // Render reports page with filters and charts
     return (
-        <Box sx={{ mt: 4 }}>
-            <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>Reports</Typography>
-
-            {/* Filters Section for month/year/currency selection */}
-            <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-                <Grid container spacing={2} sx={{ mb: 2 }}>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            select
-                            label="Month"
-                            value={month}
-                            onChange={(e) => setMonth(Number(e.target.value))}
-                            fullWidth
-                        >
-                            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                                <MenuItem key={m} value={m}>{monthNames[m]}</MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            select
-                            label="Year"
-                            value={year}
-                            onChange={(e) => setYear(Number(e.target.value))}
-                            fullWidth
-                        >
-                            {years.map((y) => (
-                                <MenuItem key={y} value={y}>{y}</MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            select
-                            label="Currency"
-                            value={currency}
-                            onChange={(e) => setCurrency(e.target.value)}
-                            fullWidth
-                        >
-                            {currencies.map((c) => (
-                                <MenuItem key={c} value={c}>{c}</MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-                </Grid>
-
-                {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
-            </Paper>
-
-            {/* Charts Section - displays pie and bar charts */}
-            {reportData && yearlyData && (
-                <Grid container spacing={4}>
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={2} sx={{ p: 3 }}>
-                            <Typography variant="h6" sx={{ mb: 2 }}>
-                                Costs by Category - {monthNames[month]} {year}
-                            </Typography>
-                            <PieChart data={reportData.costs} currency={currency} />
-                        </Paper>
-                    </Grid>
-
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={2} sx={{ p: 3 }}>
-                            <Typography variant="h6" sx={{ mb: 2 }}>
-                                Monthly Costs - {year}
-                            </Typography>
-                            <BarChart data={yearlyData} currency={currency} year={year} />
-                        </Paper>
-                    </Grid>
-                </Grid>
-            )}
-
-            {/* Summary Section showing total expenses and item count */}
-            {reportData && (
-                <Paper elevation={2} sx={{ p: 3, mt: 4 }}>
-                    <Typography variant="h6" sx={{ mb: 2 }}>
-                        Summary for {monthNames[month]} {year}
-                    </Typography>
-                    <Typography variant="body1">
-                        Total Expenses: <strong>{currency} {reportData.total.sum.toFixed(2)}</strong>
-                    </Typography>
-                    <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
-                        Items: {reportData.costs.length}
-                    </Typography>
-                </Paper>
-            )}
-        </Box>
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>Reports</Typography>
+        {/* Filters Section for month/year/currency selection */}
+        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                label="Month"
+                value={month}
+                onChange={(e) => setMonth(Number(e.target.value))}
+                fullWidth
+              >
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                  <MenuItem key={m} value={m}>{monthNames[m]}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                label="Year"
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+                fullWidth
+              >
+                {years.map((y) => (
+                  <MenuItem key={y} value={y}>{y}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                label="Currency"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                fullWidth
+              >
+                {currencies.map((c) => (
+                  <MenuItem key={c} value={c}>{c}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
+          {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
+        </Paper>
+        {/* Charts Section - displays pie and bar charts */}
+        {reportData && yearlyData && (
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Paper elevation={2} sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Costs by Category - {monthNames[month]} {year}
+                </Typography>
+                <PieChart data={reportData.costs} currency={currency} />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Paper elevation={2} sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Monthly Costs - {year}
+                </Typography>
+                <BarChart data={yearlyData} currency={currency} year={year} />
+              </Paper>
+            </Grid>
+          </Grid>
+        )}
+        {/* Summary Section showing total expenses and item count */}
+        {reportData && (
+          <Paper elevation={2} sx={{ p: 3, mt: 4 }}>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Summary for {monthNames[month]} {year}
+            </Typography>
+            <Typography variant="body1">
+              Total Expenses: <strong>{currency} {reportData.total.sum.toFixed(2)}</strong>
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+              Items: {reportData.costs.length}
+            </Typography>
+          </Paper>
+        )}
+      </Box>
     );
 };
 
