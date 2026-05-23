@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Paper, Box, TextField, MenuItem, Button, Typography, Grid } from '@mui/material';
 import db from '../services/db';
 import exchangeRateService from '../services/exchangeRateService';
-import PieChart from '../components/Charts/PieChart';
-import BarChart from '../components/Charts/BarChart';
+import PieChart from '../components/Charts/pieChart';
+import BarChart from '../components/Charts/barChart';
 
 // Supported currencies for reporting
 const currencies = ['USD', 'ILS', 'GBP', 'EURO'];

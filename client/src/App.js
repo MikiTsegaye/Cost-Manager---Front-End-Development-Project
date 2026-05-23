@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Container, CssBaseline, AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
-import AddCost from './pages/AddCost';
-import Reports from './pages/Reports';
-import Settings from './pages/Settings';
+import AddCost from './pages/addCost';
+import Reports from './pages/reports';
+import Settings from './pages/settings';
 
 // TabPanel component for hiding/showing tab content
 function TabPanel(props) {
