@@ -1,8 +1,8 @@
 """
-COST MANAGER FRONTEND - VALIDATION AGENT
-========================================
+COST MANAGER FRONTEND - CODE VALIDATION AGENT
+==============================================
 
-This script validates that a Cost Manager project meets all code quality and submission requirements.
+This script validates that a Cost Manager project meets all code quality requirements.
 
 VALIDATION CATEGORIES:
 ======================
@@ -17,16 +17,7 @@ D1:  Variable declarations - Must use 'const' or 'let', NO 'var' keyword
 E1/E2/E3: db.js interface - Must expose window.db with required methods: 
           openCostsDB(), addCost(), getReport()
 
-SUBMISSION REQUIREMENTS (Manual verification needed):
----
-1. Video: Unlisted YouTube video (max 60 seconds)
-2. ZIP file: Project contents with node_modules DELETED
-3. PDF file: All code files with team information
-4. db.js: Vanilla version as separate submission file
-5. Files: Must submit 3 separate files to Moodle (PDF, db.js, ZIP)
-6. Deadline: Only team manager submits; account for 30-min time offset
-
-See FINAL_CHECKLIST.md and README.md for complete requirements.
+See FINAL_CHECKLIST.md and README.md for complete project requirements.
 """
 
 import os
@@ -205,23 +196,6 @@ if __name__ == "__main__":
         sys.exit(1)
     if not verify_vanilla_db_file():
         sys.exit(1)
-    
-    print("\n" + "=" * 50)
-    print("SUBMISSION REQUIREMENTS")
-    print("=" * 50)
-    print("Please verify the following submission guidelines:")
-    print("1. ✓ Video uploaded to YouTube as unlisted (max 60s)")
-    print("2. ✓ ZIP file created (node_modules deleted)")
-    print("3. ✓ PDF file created with all code files")
-    print("   - Filename format: firstname_lastname.pdf (lowercase)")
-    print("   - Includes team info, video link, member details, tool usage summary")
-    print("4. ✓ Three files submitted to Moodle:")
-    print("   - PDF file (code + documentation)")
-    print("   - db.js file (vanilla version)")
-    print("   - ZIP file (project contents)")
-    print("5. ✓ Only team manager submits (via Moodle)")
-    print("   - Account for 30-minute time difference with Moodle server")
-    print("   - Late submissions will NOT be accepted")
     
     print("\n" + "=" * 50)
     print("[SUCCESS] Code validation complete!")
