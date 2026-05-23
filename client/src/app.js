@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Container, CssBaseline, AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
-import addCost from './pages/add_cost';
-import reports from './pages/reports';
-import settings from './pages/settings';
+import AddCost from './pages/add_cost';
+import Reports from './pages/reports';
+import Settings from './pages/settings';
 
 // TabPanel component for hiding/showing tab content
 function TabPanel(props) {
@@ -21,7 +21,7 @@ function TabPanel(props) {
 }
 
 // Main App component with tab-based navigation
-function app() {
+function App() {
     // State to track active tab
     const [tabValue, setTabValue] = useState(0);
 
@@ -51,17 +51,17 @@ function app() {
           </Box>
           {/* Tab panels for different sections of the application */}
           <TabPanel value={tabValue} index={0}>
-            <addCost />
+            <AddCost />
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            <reports />
+            <Reports />
           </TabPanel>
           <TabPanel value={tabValue} index={2}>
-            <settings />
+            <Settings />
           </TabPanel>
         </Container>
       </React.Fragment>
     );
 }
 
-export default app;
+export default App;
